@@ -1,7 +1,11 @@
 import sqlite3
 
 # Criação de um arquivo banco de dados (.db) no computador
-file = "Sqlite3.db"
+import os
+
+# garantir que o arquivo fique dentro do diretório sqlite_db em vez da raiz
+db_dir = os.path.dirname(__file__)
+file = os.path.join(db_dir, "Sqlite3.db")
 
 # Método de teste e erro (try/except) para correr o código
 try:
@@ -25,7 +29,7 @@ try:
         id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         telefone TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE
+        email TEXT NOT NULL
     );
     '''
     tabela_pedido = '''
