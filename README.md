@@ -9,21 +9,42 @@ Este repositório contém a parte backend de uma aplicação com Streamlit.
 - `front/`: código do aplicativo Streamlit.
 - `sqlite_db/`: script de criação e inicialização do banco de dados SQLite.
 
+## Dependências
+
+Além da biblioteca padrão do Python (como `sqlite3`, `os`, `subprocess` etc.),
+este projeto usa os seguintes pacotes de terceiros:
+
+- `streamlit` – framework de interface web;
+- `pandas` – manipulação e exibição de tabelas;
+
+Instale-os com:
+
+```bash
+pip install streamlit pandas
+```
+
+Em sistemas com múltiplos ambientes de Python, certifique-se de usar o mesmo
+ambiente ao rodar `main.py`.
+
 ## Uso
 
-1. Instale as dependências, por exemplo:
-
-   ```bash
-   pip install streamlit
-   ```
-
-2. Execute:
+1. Inicie o programa:
 
    ```bash
    python main.py
    ```
 
-3. A página será aberta automaticamente em `http://localhost:8501`.
+2. A página será aberta automaticamente em `http://localhost:8501`.
+
+## Interface do Frontend
+
+O frontend, implementado com Streamlit, apresenta uma **barra lateral à esquerda**
+com três botões de navegação: *Usuários*, *Pedidos* e *Serviços*. Ao clicar em um
+dos botões, a aplicação carrega a tabela correspondente do banco de dados e mostra
+os registros em uma grade (`st.dataframe`).
+
+Os dados são consultados diretamente no arquivo `sqlite_db/Sqlite3.db` usando uma
+função auxiliar (`query_table`) localizada em `front/app.py`.
 
 ## Banco de Dados SQLite
 
