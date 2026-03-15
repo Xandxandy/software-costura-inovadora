@@ -21,12 +21,12 @@ try:
     cursor.execute("DROP TABLE IF EXISTS item_pedido")
     cursor.execute("DROP TABLE IF EXISTS pedido")
     cursor.execute("DROP TABLE IF EXISTS servico")
-    cursor.execute("DROP TABLE IF EXISTS usuario")
+    cursor.execute("DROP TABLE IF EXISTS cliente")
 
     # Código para criar as tabelas
-    tabela_usuario = '''
-    CREATE TABLE IF NOT EXISTS usuario (
-        id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    tabela_cliente = '''
+    CREATE TABLE IF NOT EXISTS cliente (
+        id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         telefone TEXT NOT NULL,
         email TEXT NOT NULL
@@ -38,8 +38,8 @@ try:
         valor_total DECIMAL(10, 2),
         data_pedido DATE,
         status TEXT,
-        id_usuario INTEGER,
-        FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
+        id_cliente INTEGER,
+        FOREIGN KEY (id_cliente) REFERENCES cliente (id_cliente)
     );
     '''
     tabela_servico = '''
@@ -62,7 +62,7 @@ try:
     '''
     
     # Execução do código para criar as tabelas
-    cursor.execute(tabela_usuario)
+    cursor.execute(tabela_cliente)
     cursor.execute(tabela_pedido)
     cursor.execute(tabela_servico)
     cursor.execute(tabela_item_pedido)
@@ -70,10 +70,10 @@ try:
 
     # Inserindo dados para teste das tabelas
     cursor.execute('''
-    INSERT INTO usuario (nome, telefone, email) VALUES ('Alexandre Uihara', '11913767838', 'emailalexandre@gmail.com')
+    INSERT INTO cliente (nome, telefone, email) VALUES ('Alexandre Uihara', '11913767838', 'emailalexandre@gmail.com')
     ''')
-    # Criando uma variável para guardar o id do usuario
-    id_alexandre = cursor.lastrowid
+    # Criando uma variável para guardar o id do cliente
+    id_cliente = cursor.lastrowid
 
     cursor.execute('''
     INSERT INTO servico (nome_servico, preco_base) VALUES ('Troca de Zíper', 35.00)
@@ -82,8 +82,8 @@ try:
     id_servico = cursor.lastrowid
 
     cursor.execute('''
-        INSERT INTO pedido (valor_total, data_pedido, status, id_usuario) VALUES (35.00, '2026-03-15', 'Finalizado', ?)
-    ''', (id_alexandre,))
+        INSERT INTO pedido (valor_total, data_pedido, status, id_cliente) VALUES (35.00, '2026-03-15', 'Finalizado', ?)
+    ''', (id_cliente,))
     # Criando uma variável para guardar o id do pedido
     id_pedido = cursor.lastrowid
 
@@ -95,9 +95,9 @@ try:
 
     # Gerando código para mostrar os dados no terminal
     cursor.execute("""
-    SELECT u.nome, p.data_pedido, s.nome_servico, p.valor_total
-    FROM usuario u
-    JOIN pedido p ON u.id_usuario = p.id_usuario
+    SELECT c.nome, p.data_pedido, s.nome_servico, p.valor_total
+    FROM cliente c
+    JOIN pedido p ON c.id_cliente = p.id_cliente
     JOIN item_pedido ip ON p.id_pedido = ip.id_pedido
     JOIN servico s ON ip.id_servico = s.id_servico
     """)

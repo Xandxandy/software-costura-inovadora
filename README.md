@@ -1,13 +1,23 @@
 # Python-backend
 
-Este repositório contém a parte backend de uma aplicação com Streamlit.
+Este repositório contém a parte backend de uma aplicação com Streamlit para gerenciamento de clientes, pedidos e serviços.
 
 ## Estrutura
 
 - `main.py`: ponto de entrada que inicializa o banco e o frontend.
-- `back/`: pacote com funções auxiliares (inicialização de banco e frontend).
-- `front/`: código do aplicativo Streamlit.
-- `sqlite_db/`: script de criação e inicialização do banco de dados SQLite.
+- `back/`: pacote com funções CRUD e auxiliares
+  - `clientes.py`: operações CRUD para clientes
+  - `pedidos.py`: operações CRUD para pedidos
+  - `servicos.py`: operações CRUD para serviços
+  - `database.py`: funções gerais de banco de dados
+  - `init_db.py`: inicialização do banco de dados
+  - `start_frontend.py`: inicialização do Streamlit
+- `front/`: código da aplicação Streamlit
+  - `app.py`: página principal e navegação
+  - `clientes_interface.py`: interface CRUD de clientes
+  - `pedidos_interface.py`: interface CRUD de pedidos
+  - `servicos_interface.py`: interface CRUD de serviços
+- `sqlite_db/`: script de criação e inicialização do banco de dados SQLite
 
 ## Dependências
 
@@ -39,12 +49,34 @@ ambiente ao rodar `main.py`.
 ## Interface do Frontend
 
 O frontend, implementado com Streamlit, apresenta uma **barra lateral à esquerda**
-com três botões de navegação: *Usuários*, *Pedidos* e *Serviços*. Ao clicar em um
-dos botões, a aplicação carrega a tabela correspondente do banco de dados e mostra
-os registros em uma grade (`st.dataframe`).
+com quatro botões de navegação:
 
-Os dados são consultados diretamente no arquivo `sqlite_db/Sqlite3.db` usando uma
-função auxiliar (`query_table`) localizada em `front/app.py`.
+- **🖥️ Início**: Exibe a página inicial
+- **🧑 Clientes**: Gerenciamento completo de clientes (CRUD)
+- **📋 Pedidos**: Gerenciamento completo de pedidos (CRUD)
+- **✂️ Serviços**: Gerenciamento completo de serviços (CRUD)
+
+### Telas de Gerenciamento
+
+Cada seção possui 4 abas de funcionalidade:
+
+1. **Listar**: Visualiza todos os registros em formato de tabela
+2. **Adicionar**: Formulário para inserir novos registros
+3. **Editar**: Seleciona e atualiza um registro existente
+4. **Deletar**: Seleciona e remove um registro
+
+#### Clientes
+- Campos: Nome, Telefone, Email
+- Validação básica de email
+
+#### Pedidos
+- Campos: Cliente (seleção), Valor Total, Data do Pedido, Status
+- Status disponíveis: Pendente, Processando, Finalizado, Cancelado
+- Exibe nome do cliente na listagem
+
+#### Serviços
+- Campos: Nome do Serviço, Preço Base
+- Interface simples para gerenciar serviços
 
 ## Banco de Dados SQLite
 
@@ -54,14 +86,21 @@ são (re)criados pelo script `sqlite_db/import sqlite3.py`. Por padrão o proces
 apaga tabelas existentes sempre que o programa é executado — isso facilita testes
 repetidos, mas não deve ser usado em ambiente de produção.
 
+### Tabelas
+
+- **cliente**: Armazena informações de clientes (id_cliente, nome, telefone, email)
+- **pedido**: Armazena pedidos (id_pedido, valor_total, data_pedido, status, id_cliente)
+- **servico**: Armazena serviços (id_servico, nome_servico, preco_base)
+- **item_pedido**: Armazena itens de pedidos (id_item, quantidade, valor_unitario, id_pedido, id_servico)
+
 Além disso:
 
-- a coluna `email` da tabela `usuario` não possui coerção de unicidade;
-- chaves estrangeiras são ativadas usando `PRAGMA foreign_keys = ON` no início
-do script.
+- Chaves estrangeiras são ativadas usando `PRAGMA foreign_keys = ON`
+- Relacionamento: Pedidos → Clientes e Items de Pedido → Pedidos/Serviços
 
 ## Notas
 
 - A inicialização do banco remove e recria tabelas a cada execução (uso para testes).
-- A restrição `UNIQUE` no campo `email` foi removida propositalmente.
+- As operações CRUD validam dados antes de inserir/atualizar no banco.
+- A página inicial só é exibida quando o botão "🖥️ Início" é clicado
 - Configurações do Streamlit podem ser definidas em `~/.streamlit/config.toml`.
