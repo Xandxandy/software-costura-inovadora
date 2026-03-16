@@ -3,6 +3,8 @@
 Fornece a interface para visualizar, adicionar, editar e deletar clientes.
 """
 
+import time
+
 import streamlit as st
 import pandas as pd
 from back.clientes import (
@@ -36,8 +38,11 @@ def mostrar_interface_clientes():
     # TAB 2: ADICIONAR CLIENTE
     with tab2:
         st.write("**Adicionar Novo Cliente**")
-        
-        with st.form("form_adicionar_cliente"):
+
+        if "contador_form" not in st.session_state:
+            st.session_state.contador_form = 0
+
+        with st.form(key=f"form_adicionar_cliente_{st.session_state.contador_form}"):
             nome = st.text_input("Nome", placeholder="Digite o nome do cliente")
             telefone = st.text_input("Telefone", placeholder="Digite o telefone")
             email = st.text_input("Email", placeholder="Digite o email")
@@ -47,15 +52,21 @@ def mostrar_interface_clientes():
             if submit_btn:
                 if not nome or not telefone or not email:
                     st.error("❌ Todos os campos são obrigatórios!")
-                elif "@" not in email:
+                elif any(char.isdigit() for char in nome):
+                    st.error("❌ O nome não pode conter números!")
+                elif any(char.isalpha() for char in telefone):
+                    st.error("❌ O telefone deve conter apenas números!")
+                elif "@" not in email or "." not in email.split("@")[-1]:
                     st.error("❌ Email inválido!")
                 else:
                     if adicionar_cliente(nome, telefone, email):
                         st.success("✅ Cliente adicionado com sucesso!")
+                        st.session_state.contador_form += 1  # Incrementa o contador para criar um novo formulário único
+                        time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
                         st.rerun()
                     else:
                         st.error("❌ Erro ao adicionar cliente!")
-    
+                        
     # TAB 3: EDITAR CLIENTE
     with tab3:
         st.write("**Editar Cliente Existente**")
@@ -90,11 +101,16 @@ def mostrar_interface_clientes():
                     if submit_btn:
                         if not nome or not telefone or not email:
                             st.error("❌ Todos os campos são obrigatórios!")
-                        elif "@" not in email:
+                        elif any(char.isdigit() for char in nome):
+                            st.error("❌ O nome não pode conter números!")
+                        elif any(char.isalpha() for char in telefone):
+                            st.error("❌ O telefone deve conter apenas números!")
+                        elif "@" not in email or "." not in email.split("@")[-1]:
                             st.error("❌ Email inválido!")
                         else:
                             if editar_cliente(id_cliente, nome, telefone, email):
                                 st.success("✅ Cliente atualizado com sucesso!")
+                                time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
                                 st.rerun()
                             else:
                                 st.error("❌ Erro ao atualizar cliente!")
@@ -129,6 +145,7 @@ def mostrar_interface_clientes():
                 if st.button("🗑️ Deletar Cliente", type="secondary"):
                     if deletar_cliente(id_cliente):
                         st.success("✅ Cliente deletado com sucesso!")
+                        time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
                         st.rerun()
                     else:
                         st.error("❌ Erro ao deletar cliente!")
