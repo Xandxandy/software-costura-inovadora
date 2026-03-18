@@ -112,13 +112,25 @@ def mostrar_interface_pedidos():
                                 for _, row in df_clientes.iterrows()}
                 
                 with st.form("form_editar_pedido"):
-                    cliente_atual = [k for k, v in clientes_dict.items() 
-                                    if v == pedido_info.get('id_cliente')][0]
-                    
+                    # 1. Busca o nome do cliente de forma segura (sem travar se não achar)
+                    encontrados = [k for k, v in clientes_dict.items() if v == pedido_info.get('id_cliente')]
+                    cliente_atual = encontrados[0] if encontrados else "Cliente não encontrado"
+
+                    # 2. Prepara a lista de opções para o seletor
+                    opcoes_clientes = list(clientes_dict.keys())
+
+                    # 3. Tenta achar a posição do cliente_atual na lista para o seletor começar nele
+                    try:
+                        indice_cliente = opcoes_clientes.index(cliente_atual)
+                    except ValueError:
+                        # Se o cliente não existir no dicionário, seleciona o primeiro da lista
+                        indice_cliente = 0
+
+                    # 4. Cria o seletor de cliente
                     cliente_selecionado = st.selectbox(
                         "Cliente",
-                        options=clientes_dict.keys(),
-                        index=list(clientes_dict.keys()).index(cliente_atual)
+                        options=opcoes_clientes,
+                        index=indice_cliente
                     )
                     
                     valor_total = st.number_input(
