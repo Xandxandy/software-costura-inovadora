@@ -71,6 +71,8 @@ def mostrar_interface_pedidos():
                 
                 status_options = ["Pendente", "Processando", "Finalizado", "Cancelado"]
                 status = st.selectbox("Status", options=status_options)
+
+                observacoes = st.text_area("Observações", placeholder="Ex: Detalhes do ajuste, tecido, etc.")
                 
                 submit_btn = st.form_submit_button("➕ Adicionar Pedido")
                 
@@ -78,7 +80,7 @@ def mostrar_interface_pedidos():
                     id_cliente = clientes_dict[cliente_selecionado]
                     data_str = data_pedido.strftime("%Y-%m-%d")
                     
-                    if adicionar_pedido(valor_total, data_str, status, id_cliente):
+                    if adicionar_pedido(valor_total, data_str, status, id_cliente, observacoes):
                         st.success("✅ Pedido adicionado com sucesso!")
                         time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                         st.rerun()
@@ -163,13 +165,19 @@ def mostrar_interface_pedidos():
                         index=status_index
                     )
                     
+                    observacoes = st.text_area( 
+                        "Observações", 
+                        value=pedido_info.get('observacoes', ''),
+                        placeholder="Ex: Detalhes do ajuste, tecido, etc."
+                    )
+
                     submit_btn = st.form_submit_button("✏️ Atualizar Pedido")
                     
                     if submit_btn:
                         id_cliente = clientes_dict[cliente_selecionado]
                         data_str = data_pedido.strftime("%Y-%m-%d")
                         
-                        if editar_pedido(id_pedido, valor_total, data_str, status, id_cliente):
+                        if editar_pedido(id_pedido, valor_total, data_str, status, id_cliente, observacoes):
                             st.success("✅ Pedido atualizado com sucesso!")
                             time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                             st.rerun()

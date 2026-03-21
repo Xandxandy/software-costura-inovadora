@@ -15,7 +15,7 @@ def get_db_path():
     return os.path.join(base, "sqlite_db", "Sqlite3.db")
 
 
-def adicionar_pedido(valor_total: float, data_pedido: str, status: str, id_cliente: int) -> bool:
+def adicionar_pedido(valor_total: float, data_pedido: str, status: str, id_cliente: int, observacoes: str = None) -> bool:
     """Adiciona um novo pedido ao banco de dados.
     
     Args:
@@ -23,6 +23,7 @@ def adicionar_pedido(valor_total: float, data_pedido: str, status: str, id_clien
         data_pedido: Data do pedido (formato YYYY-MM-DD)
         status: Status do pedido
         id_cliente: ID do cliente
+        observacoes: Observações sobre o pedido (opcional)
         
     Returns:
         True se adicionado com sucesso, False caso contrário
@@ -31,8 +32,8 @@ def adicionar_pedido(valor_total: float, data_pedido: str, status: str, id_clien
         conn = sqlite3.connect(get_db_path())
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO pedido (valor_total, data_pedido, status, id_cliente) VALUES (?, ?, ?, ?)",
-            (valor_total, data_pedido, status, id_cliente)
+            "INSERT INTO pedido (valor_total, data_pedido, status, id_cliente, observacoes) VALUES (?, ?, ?, ?, ?)",
+            (valor_total, data_pedido, status, id_cliente, observacoes)
         )
         conn.commit()
         conn.close()
@@ -63,7 +64,7 @@ def listar_pedidos() -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def editar_pedido(id_pedido: int, valor_total: float, data_pedido: str, status: str, id_cliente: int) -> bool:
+def editar_pedido(id_pedido: int, valor_total: float, data_pedido: str, status: str, id_cliente: int, observacoes: str = None) -> bool:
     """Edita um pedido existente.
     
     Args:
@@ -72,6 +73,7 @@ def editar_pedido(id_pedido: int, valor_total: float, data_pedido: str, status: 
         data_pedido: Nova data
         status: Novo status
         id_cliente: Novo ID do cliente
+        observacoes: Novas observações sobre o pedido (opcional)
         
     Returns:
         True se editado com sucesso, False caso contrário
@@ -80,8 +82,8 @@ def editar_pedido(id_pedido: int, valor_total: float, data_pedido: str, status: 
         conn = sqlite3.connect(get_db_path())
         cursor = conn.cursor()
         cursor.execute(
-            "UPDATE pedido SET valor_total = ?, data_pedido = ?, status = ?, id_cliente = ? WHERE id_pedido = ?",
-            (valor_total, data_pedido, status, id_cliente, id_pedido)
+            "UPDATE pedido SET valor_total = ?, data_pedido = ?, status = ?, id_cliente = ?, observacoes = ? WHERE id_pedido = ?",
+            (valor_total, data_pedido, status, id_cliente, observacoes, id_pedido)
         )
         conn.commit()
         conn.close()
