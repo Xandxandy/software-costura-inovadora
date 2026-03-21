@@ -3,6 +3,8 @@
 Orçamentos são registrados na mesma tabela pedido com status 'Orçamento'.
 """
 
+import time
+
 import streamlit as st
 from datetime import datetime
 from back.pedidos import (
@@ -28,7 +30,7 @@ def mostrar_interface_orcamentos():
         if df.empty:
             st.info("Nenhum orçamento cadastrado.")
         else:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de orçamentos: {len(df)}")
 
     with tab2:
@@ -60,7 +62,8 @@ def mostrar_interface_orcamentos():
 
                     if adicionar_pedido(valor_total, data_str, "Orçamento", id_cliente):
                         st.success("✅ Orçamento adicionado com sucesso!")
-                        st.rerun()
+                        time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
+                        st.rerun()  # Recarrega a página para mostrar o novo orçamento na lista
                     else:
                         st.error("❌ Erro ao adicionar orçamento!")
 
@@ -87,6 +90,7 @@ def mostrar_interface_orcamentos():
             if st.button("✅ Confirmar orçamento como pedido"):
                 if confirmar_orcamento(id_orcamento):
                     st.success("✅ Orçamento confirmado e convertido em pedido (status: Pendente).")
-                    st.rerun()
+                    time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
+                    st.rerun()  # Recarrega a página para mostrar o novo orçamento na lista
                 else:
                     st.error("❌ Falha ao confirmar orçamento. Verifique se ainda está no status 'Orçamento'.")

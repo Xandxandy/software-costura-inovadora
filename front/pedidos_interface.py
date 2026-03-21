@@ -3,6 +3,8 @@
 Fornece a interface para visualizar, adicionar, editar e deletar pedidos.
 """
 
+import time
+
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -32,7 +34,7 @@ def mostrar_interface_pedidos():
         if df.empty:
             st.info("Nenhum pedido cadastrado.")
         else:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de pedidos: {len(df)}")
     
     # TAB 2: ADICIONAR PEDIDO
@@ -78,6 +80,7 @@ def mostrar_interface_pedidos():
                     
                     if adicionar_pedido(valor_total, data_str, status, id_cliente):
                         st.success("✅ Pedido adicionado com sucesso!")
+                        time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                         st.rerun()
                     else:
                         st.error("❌ Erro ao adicionar pedido!")
@@ -168,6 +171,7 @@ def mostrar_interface_pedidos():
                         
                         if editar_pedido(id_pedido, valor_total, data_str, status, id_cliente):
                             st.success("✅ Pedido atualizado com sucesso!")
+                            time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                             st.rerun()
                         else:
                             st.error("❌ Erro ao atualizar pedido!")
@@ -202,6 +206,7 @@ def mostrar_interface_pedidos():
                 if st.button("🗑️ Deletar Pedido", type="secondary"):
                     if deletar_pedido(id_pedido):
                         st.success("✅ Pedido deletado com sucesso!")
+                        time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                         st.rerun()
                     else:
                         st.error("❌ Erro ao deletar pedido!")

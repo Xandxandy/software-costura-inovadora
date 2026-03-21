@@ -3,6 +3,8 @@
 Fornece a interface para visualizar, adicionar, editar e deletar serviços.
 """
 
+import time
+
 import streamlit as st
 import pandas as pd
 from back.servicos import (
@@ -30,7 +32,7 @@ def mostrar_interface_servicos():
         if df.empty:
             st.info("Nenhum serviço cadastrado.")
         else:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de tipos de serviços: {len(df)}")
     
     # TAB 2: ADICIONAR SERVIÇO
@@ -57,6 +59,7 @@ def mostrar_interface_servicos():
                 else:
                     if adicionar_servico(nome_servico, preco_base):
                         st.success("✅ Serviço adicionado com sucesso!")
+                        time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                         st.rerun()
                     else:
                         st.error("❌ Erro ao adicionar serviço!")
@@ -106,6 +109,7 @@ def mostrar_interface_servicos():
                         else:
                             if editar_servico(id_servico, nome_servico, preco_base):
                                 st.success("✅ Serviço atualizado com sucesso!")
+                                time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                                 st.rerun()
                             else:
                                 st.error("❌ Erro ao atualizar serviço!")
@@ -140,6 +144,7 @@ def mostrar_interface_servicos():
                 if st.button("🗑️ Deletar Serviço", type="secondary"):
                     if deletar_servico(id_servico):
                         st.success("✅ Serviço deletado com sucesso!")
+                        time.sleep(1.5)  # Pequena pausa para mostrar a mensagem antes de atualizar
                         st.rerun()
                     else:
                         st.error("❌ Erro ao deletar serviço!")

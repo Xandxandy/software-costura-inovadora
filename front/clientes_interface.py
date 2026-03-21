@@ -32,7 +32,7 @@ def mostrar_interface_clientes():
         if df.empty:
             st.info("Nenhum cliente cadastrado.")
         else:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de clientes: {len(df)}")
     
     # TAB 2: ADICIONAR CLIENTE
