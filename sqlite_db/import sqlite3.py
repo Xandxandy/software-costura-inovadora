@@ -33,6 +33,7 @@ try:
         data_pedido DATE,
         status TEXT,
         id_cliente INTEGER,
+        observacoes TEXT,
         FOREIGN KEY (id_cliente) REFERENCES cliente (id_cliente)
     );
     '''

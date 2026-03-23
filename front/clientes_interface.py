@@ -3,6 +3,7 @@
 Fornece a interface para visualizar, adicionar, editar e deletar clientes.
 """
 
+import re
 import time
 
 import streamlit as st
@@ -44,22 +45,25 @@ def mostrar_interface_clientes():
 
         with st.form(key=f"form_adicionar_cliente_{st.session_state.contador_form}"):
             nome = st.text_input("Nome", placeholder="Digite o nome do cliente")
-            telefone = st.text_input("Telefone", placeholder="Digite o telefone")
+            telefone = st.text_input("Telefone", placeholder="Digite o telefone", help="Digite o DDD seguido do número (ex: 11987654321)")
             email = st.text_input("Email", placeholder="Digite o email")
             
             submit_btn = st.form_submit_button("➕ Adicionar Cliente")
             
             if submit_btn:
+
+                telefone_limpo = re.sub(r"\D", "", telefone)  # Remove tudo que não for número do telefone
+
                 if not nome or not telefone or not email:
                     st.error("❌ Todos os campos são obrigatórios!")
                 elif any(char.isdigit() for char in nome):
                     st.error("❌ O nome não pode conter números!")
-                elif any(char.isalpha() for char in telefone):
-                    st.error("❌ O telefone deve conter apenas números!")
+                elif not (10 <= len(telefone_limpo) <= 11):
+                    st.error("❌ Telefone inválido! Digite DDD + Número (10 ou 11 dígitos).")
                 elif "@" not in email or "." not in email.split("@")[-1]:
                     st.error("❌ Email inválido!")
                 else:
-                    if adicionar_cliente(nome, telefone, email):
+                    if adicionar_cliente(nome, telefone_limpo, email):
                         st.success("✅ Cliente adicionado com sucesso!")
                         st.session_state.contador_form += 1  # Incrementa o contador para criar um novo formulário único
                         time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
