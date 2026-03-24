@@ -10,10 +10,13 @@ import streamlit as st
 import pandas as pd
 from back.clientes import (
     adicionar_cliente,
+    inativar_cliente,
     listar_clientes,
     editar_cliente,
     deletar_cliente,
-    obter_cliente
+    listar_clientes_inativos,
+    obter_cliente,
+    reativar_cliente,
 )
 
 
@@ -35,6 +38,31 @@ def mostrar_interface_clientes():
         else:
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de clientes: {len(df)}")
+
+        mostrar_lixeira = st.checkbox("Mostrar clientes inativos", value=False)
+
+        if mostrar_lixeira:
+            df_inativos = listar_clientes_inativos()
+            if df_inativos.empty:
+                st.info("Nenhum cliente inativo encontrado.")
+            else:
+                st.subheader("🗑️ Clientes Inativos")
+                for _, row in df_inativos.iterrows():
+                    col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
+                    with col1:
+                        st.write(f"{row['id_cliente']} - {row['nome']} ({row['email']})")
+                    with col2:
+                        st.write(row['telefone'])
+                    with col3:
+                        st.write(row['status_texto'])
+                    with col4:
+                        if st.button("♻️ Reativar", key=f"reativar_{row['id_cliente']}"):
+                            if reativar_cliente(row['id_cliente']):
+                                st.success("✅ Cliente reativado com sucesso!")
+                                time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
+                                st.rerun()
+                            else:
+                                st.error("❌ Erro ao reativar cliente!")
     
     # TAB 2: ADICIONAR CLIENTE
     with tab2:
@@ -119,37 +147,34 @@ def mostrar_interface_clientes():
                             else:
                                 st.error("❌ Erro ao atualizar cliente!")
     
-    # TAB 4: DELETAR CLIENTE
+    # TAB 4: DESATIVAR CLIENTE
     with tab4:
-        st.write("**Deletar Cliente**")
+        st.write("**Desativar Cliente**")
         
         df_clientes = listar_clientes()
         
         if df_clientes.empty:
-            st.info("Nenhum cliente para deletar.")
+            st.info("Nenhum cliente para desativar.")
         else:
-            # Criar um dicionário para facilitar a seleção
             clientes_dict = {
                 f"{row['id_cliente']} - {row['nome']}": row['id_cliente']
                 for _, row in df_clientes.iterrows()
             }
             
             cliente_selecionado = st.selectbox(
-                "Selecione o cliente a deletar:",
-                options=clientes_dict.keys()
+                "Selecione o cliente a desativar:",
+                options=clientes_dict.keys(),
+                key="select_desativar"
             )
             
             if cliente_selecionado:
                 id_cliente = clientes_dict[cliente_selecionado]
-                cliente_info = obter_cliente(id_cliente)
+                st.warning("⚠️ Esta ação irá desativar o cliente, mas os dados permanecerão no sistema. Deseja continuar?")
                 
-                # Mostrar informações do cliente a deletar
-                st.info(f"**Cliente a deletar:**\n- Nome: {cliente_info.get('nome')}\n- Telefone: {cliente_info.get('telefone')}\n- Email: {cliente_info.get('email')}")
-                
-                if st.button("🗑️ Deletar Cliente", type="secondary"):
-                    if deletar_cliente(id_cliente):
-                        st.success("✅ Cliente deletado com sucesso!")
+                if st.button("🗑️ Desativar Cliente"):
+                    if inativar_cliente(id_cliente):
+                        st.success("✅ Cliente desativado com sucesso!")
                         time.sleep(1.5)  # Pequena pausa para o usuário ver a mensagem
                         st.rerun()
                     else:
-                        st.error("❌ Erro ao deletar cliente!")
+                        st.error("❌ Erro ao desativar cliente!")

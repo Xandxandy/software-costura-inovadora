@@ -23,7 +23,8 @@ try:
         id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL CHECK (nome NOT GLOB '*[0-9]*'),
         telefone TEXT NOT NULL UNIQUE CHECK (telefone NOT GLOB '*[a-zA-Z]*'),
-        email TEXT NOT NULL UNIQUE CHECK (email LIKE '%@%.%')
+        email TEXT NOT NULL UNIQUE CHECK (email LIKE '%@%.%'),
+        status INTEGER DEFAULT 1
     );
     '''
     tabela_pedido = '''

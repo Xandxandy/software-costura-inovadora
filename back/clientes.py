@@ -48,7 +48,8 @@ def listar_clientes() -> pd.DataFrame:
     """
     try:
         conn = sqlite3.connect(get_db_path())
-        df = pd.read_sql_query("SELECT * FROM cliente ORDER BY id_cliente", conn)
+        query = "SELECT *, CASE status WHEN 1 THEN 'Ativo' ELSE 'Inativo' END AS status_texto FROM cliente WHERE status = 1 ORDER BY id_cliente"
+        df = pd.read_sql_query(query, conn)
         conn.close()
         return df
     except sqlite3.Error as e:
@@ -103,6 +104,61 @@ def deletar_cliente(id_cliente: int) -> bool:
         print(f"Erro ao deletar cliente: {e}")
         return False
 
+def inativar_cliente(id_cliente: int) -> bool:
+    """Inativa um cliente no banco de dados.
+    
+    Args:
+        id_cliente: ID do cliente a inativar
+        
+    Returns:
+        True se inativado com sucesso, False caso contrário
+    """
+    try:
+        conn = sqlite3.connect(get_db_path())
+        cursor = conn.cursor()
+        cursor.execute("UPDATE cliente SET status = 0 WHERE id_cliente = ?", (id_cliente,))
+        conn.commit()
+        conn.close()
+        return cursor.rowcount > 0
+    except sqlite3.Error as e:
+        print(f"Erro ao inativar cliente: {e}")
+        return False
+
+def listar_clientes_inativos() -> pd.DataFrame:
+    """Retorna um DataFrame com os clientes inativos.
+    
+    Returns:
+        DataFrame com os dados dos clientes inativos
+    """
+    try:
+        conn = sqlite3.connect(get_db_path())
+        query = "SELECT *, CASE status WHEN 1 THEN 'Ativo' ELSE 'Inativo' END AS status_texto FROM cliente WHERE status = 0 ORDER BY id_cliente"
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+        return df
+    except sqlite3.Error as e:
+        print(f"Erro ao listar clientes inativos: {e}")
+        return pd.DataFrame()
+
+def reativar_cliente(id_cliente: int) -> bool:
+    """Reativa um cliente inativo no banco de dados.
+    
+    Args:
+        id_cliente: ID do cliente a reativar
+        
+    Returns:
+        True se reativado com sucesso, False caso contrário
+    """
+    try:
+        conn = sqlite3.connect(get_db_path())
+        cursor = conn.cursor()
+        cursor.execute("UPDATE cliente SET status = 1 WHERE id_cliente = ?", (id_cliente,))
+        conn.commit()
+        conn.close()
+        return cursor.rowcount > 0
+    except sqlite3.Error as e:
+        print(f"Erro ao reativar cliente: {e}")
+        return False
 
 def obter_cliente(id_cliente: int) -> dict:
     """Obtém os dados de um cliente específico.
