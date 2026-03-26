@@ -36,6 +36,9 @@ def mostrar_interface_clientes():
         if df.empty:
             st.info("Nenhum cliente cadastrado.")
         else:
+            termo_pesquisa = st.text_input("🔍 Pesquisar por nome ou email", placeholder="Digite o nome ou email para filtrar")
+            if termo_pesquisa:
+                df = df[df['nome'].str.contains(termo_pesquisa, case=False) | df['email'].str.contains(termo_pesquisa, case=False)]
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de clientes: {len(df)}")
 

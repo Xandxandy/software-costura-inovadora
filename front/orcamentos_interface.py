@@ -30,6 +30,9 @@ def mostrar_interface_orcamentos():
         if df.empty:
             st.info("Nenhum orçamento cadastrado.")
         else:
+            termo_pesquisa = st.text_input("🔍 Pesquisar por cliente ou valor", placeholder="Digite o nome do cliente ou valor para filtrar")
+            if termo_pesquisa:
+                df = df[df['nome_cliente'].str.contains(termo_pesquisa, case=False) | df['valor_total'].astype(str).str.contains(termo_pesquisa, case=False)]
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de orçamentos: {len(df)}")
 

@@ -32,6 +32,9 @@ def mostrar_interface_servicos():
         if df.empty:
             st.info("Nenhum serviço cadastrado.")
         else:
+            termo_pesquisa = st.text_input("🔍 Pesquisar por nome ou preço", placeholder="Digite o nome do serviço ou preço para filtrar")
+            if termo_pesquisa:
+                df = df[df['nome_servico'].str.contains(termo_pesquisa, case=False) | df['preco_base'].astype(str).str.contains(termo_pesquisa, case=False)]
             st.dataframe(df, use_container_width=True, hide_index=True)
             st.write(f"Total de tipos de serviços: {len(df)}")
     
