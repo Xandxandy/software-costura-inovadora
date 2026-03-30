@@ -125,8 +125,8 @@ def mostrar_interface_pedidos():
                     format="%.2f"
                 )
 
-                status_options = ["Pendente", "Processando", "Finalizado", "Cancelado"]
-                status = st.selectbox("Status", options=status_options)
+                st.write("**Status inicial: Pendente**")
+                status = "Pendente"
 
                 observacoes = st.text_area("Observações", placeholder="Ex: Detalhes do ajuste, tecido, etc.")
                 

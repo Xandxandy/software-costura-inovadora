@@ -72,6 +72,69 @@ try:
         conn.commit()
         print("Coluna 'status' adicionada à tabela 'cliente'.")
 
+    # Garantir que a coluna observacoes exista em versões antigas do pedido
+    cursor.execute("PRAGMA table_info(pedido)")
+    pedido_columns = [row[1] for row in cursor.fetchall()]
+    if 'observacoes' not in pedido_columns:
+        cursor.execute("ALTER TABLE pedido ADD COLUMN observacoes TEXT")
+        conn.commit()
+        print("Coluna 'observacoes' adicionada à tabela 'pedido'.")
+
+    # Inserir serviços padrão se ainda não existirem
+    default_services = [
+        ('Ajuste Cós ou Gancho', 20.00),
+        ('Ajuste Lateral (inteira)', 25.00),
+        ('Ajuste Lateral (pernas)', 20.00),
+        ('Barra (à máquina, à mão ou original)', 20.00),
+        ('Barra (com zíper lateral)', 40.00),
+        ('Cerzir', 15.00),
+        ('Joelheira (infantil)', 15.00),
+        ('Pregar Botão', 8.00),
+        ('Troca de Zíper', 20.00),
+        ('Trocar Elástico', 15.00),
+        ('Ajuste Altura', 25.00),
+        ('Ajuste de Mangas (com zíper)', 40.00),
+        ('Ajuste Mangas', 20.00),
+        ('Forrar ou Trocar o Forro', 70.00),
+        ('Ajuste Lateral', 25.00),
+        ('Ajuste Ombro', 20.00),
+        ('Barra à Máquina ou Mão (de festa)', 30.00),
+        ('Barra à Máquina ou Mão (simples)', 20.00),
+        ('Ajuste Lados E Cós', 25.00),
+        ('Forrar (Saia Sem Forro)', 30.00),
+        ('Ajustar Lados', 20.00),
+        ('Barra (subir altura)', 15.00),
+        ('Cerzir', 10.00),
+        ('Subir Mangas', 10.00),
+        ('Ajustar Mangas Com Punhos', 20.00),
+        ('Ajustar Punhos Manga Com Virola', 15.00),
+        ('Apertar Lados', 20.00),
+        ('Barra (à máquina)', 15.00),
+        ('Trocar / Colocar botões', 10.00),
+        ('Virar Gola', 15.00),
+        ('Barra Cortinas (pequena)', 40.00),
+        ('Barra Lençol', 20.00),
+        ('Capa de Edredons (não incluso tecido)', 35.00),
+        ('Elástico Lençol (casal)', 25.00),
+        ('Elástico Lençol (solteiro)', 20.00),
+        ('Cerzir Toalhas de Mesa', 10.00),
+        ('Barra Toalhas De Mesa', 10.00),
+        ('Pano Americano (não incluso tecido)', 20.00)
+    ]
+    cursor.execute("SELECT nome_servico FROM servico")
+    existing = {row[0] for row in cursor.fetchall()}
+    inserted = 0
+    for nome_servico, preco_base in default_services:
+        if nome_servico not in existing:
+            cursor.execute(
+                "INSERT INTO servico (nome_servico, preco_base) VALUES (?, ?)",
+                (nome_servico, preco_base)
+            )
+            inserted += 1
+    if inserted:
+        conn.commit()
+        print(f"{inserted} serviços padrão inseridos na tabela 'servico'.")
+
     # Gerando código para mostrar os dados no terminal
     cursor.execute("""
     SELECT c.nome, p.data_pedido, s.nome_servico, p.valor_total
