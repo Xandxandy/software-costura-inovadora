@@ -63,7 +63,15 @@ try:
     cursor.execute(tabela_servico)
     cursor.execute(tabela_item_pedido)
     conn.commit()
-    
+
+    # Garantir que a coluna status exista em bases antigas
+    cursor.execute("PRAGMA table_info(cliente)")
+    columns = [row[1] for row in cursor.fetchall()]
+    if 'status' not in columns:
+        cursor.execute("ALTER TABLE cliente ADD COLUMN status INTEGER DEFAULT 1")
+        conn.commit()
+        print("Coluna 'status' adicionada à tabela 'cliente'.")
+
     # Gerando código para mostrar os dados no terminal
     cursor.execute("""
     SELECT c.nome, p.data_pedido, s.nome_servico, p.valor_total
