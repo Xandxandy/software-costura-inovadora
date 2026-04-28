@@ -32,7 +32,7 @@ este projeto usa os seguintes pacotes de terceiros:
 Instale-os com:
 
 ```bash
-pip install streamlit pandas
+pip install streamlit pandas (digitando no terminal)
 ```
 
 Em sistemas com múltiplos ambientes de Python, certifique-se de usar o mesmo
